@@ -1,12 +1,15 @@
-var camera;
+var track = 0;
+var track_x =0, track_y=0, track_z=0;
+var anime = false;
 
 class Planet {
-    constructor(name = "Unknown", diameter = 0.5, radius = 5, angle = 0, orbitalPeriod = 365, textureUrl, scene, camera) {
+    constructor(index, name = "Unknown", diameter = 0.5, radius = 5, angle = 0, orbitalPeriod = 365, textureUrl, scene, camera) {
         this.name = name;
         this.diameter = diameter;
         this.radius = radius;
         this.angle = angle;
         this.textureUrl = textureUrl;
+        this.index = index;
 
         // 공전 주기에 반비례한 공전 속도 계산
         this.revolutionSpeed = (2 * Math.PI) / orbitalPeriod;
@@ -53,7 +56,7 @@ class Planet {
                 BABYLON.ActionManager.OnPickTrigger,
                 function (event) {
                     // 클릭시 행성으로 카메라 이동
-                    smoothCameraTransition(camera, this.moon.position, this.diameter, scene, camera);
+                    smoothCameraTransition(camera, this.moon.position, this.diameter, this.index, scene);
                 }.bind(this)
             )
         );
@@ -64,7 +67,7 @@ class Planet {
                 BABYLON.ActionManager.OnPickTrigger,
                 function (event) {
                     // 클릭시 행성으로 카메라 이동
-                    smoothCameraTransition(camera, this.moon.position, this.diameter, scene, camera);
+                    smoothCameraTransition(camera, this.moon.position, this.diameter, this.index, scene);
                 }.bind(this)
             )
         );
@@ -102,19 +105,19 @@ window.addEventListener('DOMContentLoaded', function () {
         camera.beta = 0;//Math.PI / 2; // 90 degrees
         camera.setPosition(new BABYLON.Vector3(-50, 20, -50));
         camera.setTarget(BABYLON.Vector3.Zero());
-        // Create a sphere to represent the planet
-        var Sun = BABYLON.MeshBuilder.CreateSphere("Sun", { diameter: 2 }, scene);
-        Sun.position = new BABYLON.Vector3(0, 0, 0);  // Set the position to the left-bottom corner
-        Sun.actionManager = new BABYLON.ActionManager(scene);
-        Sun.actionManager.registerAction(
-            new BABYLON.ExecuteCodeAction(
-                BABYLON.ActionManager.OnPickTrigger,
-                function (event) {
-                    // 클릭시 행성으로 카메라 이동
-                    smoothCameraTransition(camera, Sun.position, 2, scene, camera);
-                }.bind(this)
-            )
-        );
+        // // Create a sphere to represent the planet
+        // var Sun = BABYLON.MeshBuilder.CreateSphere("Sun", { diameter: 2 }, scene);
+        // Sun.position = new BABYLON.Vector3(0, 0, 0);  // Set the position to the left-bottom corner
+        // Sun.actionManager = new BABYLON.ActionManager(scene);
+        // Sun.actionManager.registerAction(
+        //     new BABYLON.ExecuteCodeAction(
+        //         BABYLON.ActionManager.OnPickTrigger,
+        //         function (event) {
+        //             // 클릭시 행성으로 카메라 이동
+        //             smoothCameraTransition(camera, Sun.position, 2, scene);
+        //         }.bind(this)
+        //     )
+        // );
         // Create a sphere to represent the moon
         // var planets_name = ["Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"];
         // var planets = [];
@@ -125,6 +128,7 @@ window.addEventListener('DOMContentLoaded', function () {
         //var earthurl = "https://raw.githubusercontent.com/happysujin/image-hosting/main/earth.jpg";
         
         var planetInfo = [
+            { name: "Sun", diameter: 2, radius: 0, angle: 0, orbitalPeriod: 1, textureUrl: "https://raw.githubusercontent.com/happysujin/image-hosting/main/sun.jpg" },
             { name: "Mercury", diameter: 0.5, radius: 5, angle: 0, orbitalPeriod: 88, textureUrl: "https://raw.githubusercontent.com/happysujin/image-hosting/main/mercury.jpg" }, // 공전 주기는 일 단위로 지정
             { name: "Venus", diameter: 0.8, radius: 7, angle: 0, orbitalPeriod: 225, textureUrl: "https://raw.githubusercontent.com/happysujin/image-hosting/main/venus.jpg" },
             { name: "Earth", diameter: 1, radius: 9, angle: 0, orbitalPeriod: 365, textureUrl: "https://raw.githubusercontent.com/happysujin/image-hosting/main/mars.jpg" },
@@ -140,13 +144,25 @@ window.addEventListener('DOMContentLoaded', function () {
         // 각 행성의 정보를 사용하여 Planet 객체를 생성하고 배열에 추가
         for (var i = 0; i < planetInfo.length; i++) {
             var info = planetInfo[i];
-            planets.push(new Planet(info.name, info.diameter, info.radius, info.angle, info.orbitalPeriod, info.textureUrl, scene, camera));
+            planets.push(new Planet(i, info.name, info.diameter, info.radius, info.angle, info.orbitalPeriod, info.textureUrl, scene, camera));
         }
         // Set up the animation
         //var angle = 0;
         scene.registerBeforeRender(function () {
             // Rotate the planet around its own axis
-            Sun.rotation.y += 0.01;
+            //Sun.rotation.y += 0.01;
+            if(!anime){
+                //var newPosition = planets[track].moon.position.clone();
+                // newPosition.x = planets[track].moon.position.x + track_x;
+                // newPosition.y = planets[track].moon.position.y + track_y;
+                // newPosition.z = planets[track].moon.position.z + track_z;
+                var newPosition = planets[track].moon.position;
+                newPosition.x += track_x;
+                newPosition.y += track_y;
+                newPosition.z += track_z;
+                camera.setTarget(newPosition);
+            }
+            
             
             // Orbit the moon around the planet
             for(var i = 0; i < planets.length ; i++){
@@ -187,4 +203,39 @@ window.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('resize', function () {
         engine.resize();
     });
+    //moush wheel 
+    var isMouseWheelClicked = false;
+    var lastMousePosition = { x: 0, y: 0 };
+
+    canvas.addEventListener("mousedown", function (event) {
+        if (event.button === 1) {
+            isMouseWheelClicked = true;
+            lastMousePosition = { x: event.clientX, y: event.clientY };
+        }
+    });
+
+    canvas.addEventListener("mousemove", function (event) {
+        // if (isMouseWheelClicked) {
+        //     var deltaX = event.clientX - lastMousePosition.x;
+        //     var deltaY = event.clientY - lastMousePosition.y;
+
+        //     // 조절할 이동 거리 계수
+        //     var moveFactor = 1;
+        //     // 카메라 위치 조절
+        //     camera.target=null;
+        //     camera.position.x -= deltaX * moveFactor;
+        //     camera.position.y += deltaY * moveFactor;
+        //     camera.target.x -= deltaX * moveFactor;
+        //     camera.target.y += deltaY * moveFactor;
+
+        //     lastMousePosition = { x: event.clientX, y: event.clientY };
+        // }
+    });
+
+    canvas.addEventListener("mouseup", function (event) {
+        if (event.button === 1) {
+            isMouseWheelClicked = false;
+        }
+    });
 });
+
