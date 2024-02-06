@@ -216,13 +216,17 @@ window.addEventListener('DOMContentLoaded', function () {
         engine.resize();
     });
 
-
+    //just click and drag
+    var isDragging = false;
     //moush wheel 
     var isMouseWheelClicked = false;
     var lastMousePosition = { x: 0, y: 0 };
 
     canvas.addEventListener("pointerdown", function (event) {
         event.preventDefault();
+        if (event.button === 0) {
+            isDragging = true;
+        }
         if (event.button === 1) {
             
             console.log('마우스 휠 버튼이 클릭되었습니다.');
@@ -241,7 +245,22 @@ window.addEventListener('DOMContentLoaded', function () {
 
     canvas.addEventListener("pointermove", function (event) {
         event.preventDefault();
-        
+        if (isDragging) {
+            var deltaX = event.clientX - lastMousePosition.x;
+            var deltaY = event.clientY - lastMousePosition.y;
+            var targetPosition = new BABYLON.Vector3(0,0,0);
+            var targetPosition = planets[track].moon.position;
+            // 마우스 이동에 따라 카메라의 위치 및 방향 업데이트
+            var rotationQuaternion = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, deltaX / 500);
+            camera.position = BABYLON.Vector3.TransformCoordinates(camera.position.subtract(targetPosition), rotationQuaternion).add(targetPosition);
+    
+            camera.beta += deltaY / 100;
+    
+            lastMousePosition = {
+                x: event.clientX,
+                y: event.clientY
+            };
+        }
         if (isMouseWheelClicked) {
             console.log('마우스 휠 버튼이 @@@@@@@@@@@');
             event.preventDefault();
@@ -268,6 +287,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
     canvas.addEventListener("pointerup", function (event) {
         event.preventDefault();
+        if (event.button === 0) {
+            isDragging = false;
+        }
         if (event.button === 1) {
             event.preventDefault();
             console.log('마우스 휠 버튼이 데젹먼ㅇ마ㅣ엄ㄴ릭되었습니다.');
