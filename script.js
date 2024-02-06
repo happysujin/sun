@@ -152,11 +152,11 @@ window.addEventListener('DOMContentLoaded', function () {
             // Rotate the planet around its own axis
             //Sun.rotation.y += 0.01;
             if(!anime){
-                //var newPosition = planets[track].moon.position.clone();
+                var newPosition = planets[track].moon.position.clone();
                 // newPosition.x = planets[track].moon.position.x + track_x;
                 // newPosition.y = planets[track].moon.position.y + track_y;
                 // newPosition.z = planets[track].moon.position.z + track_z;
-                var newPosition = planets[track].moon.position;
+                //var newPosition = planets[track].moon.position;
                 newPosition.x += track_x;
                 newPosition.y += track_y;
                 newPosition.z += track_z;
@@ -200,42 +200,42 @@ window.addEventListener('DOMContentLoaded', function () {
         scene.render();
     });
 
-    window.addEventListener('resize', function () {
-        engine.resize();
-    });
+    // window.addEventListener('resize', function () {
+    //     engine.resize();
+    // });
     //moush wheel 
-    var isMouseWheelClicked = false;
-    var lastMousePosition = { x: 0, y: 0 };
+    // var isMouseWheelClicked = false;
+    // var lastMousePosition = { x: 0, y: 0 };
 
-    canvas.addEventListener("mousedown", function (event) {
-        if (event.button === 1) {
-            isMouseWheelClicked = true;
-            lastMousePosition = { x: event.clientX, y: event.clientY };
-        }
-    });
+    // canvas.addEventListener("mousedown", function (event) {
+    //     if (event.button === 1) {
+    //         isMouseWheelClicked = true;
+    //         lastMousePosition = { x: event.clientX, y: event.clientY };
+    //     }
+    // });
 
-    canvas.addEventListener("mousemove", function (event) {
-        // if (isMouseWheelClicked) {
-        //     var deltaX = event.clientX - lastMousePosition.x;
-        //     var deltaY = event.clientY - lastMousePosition.y;
+    // canvas.addEventListener("mousemove", function (event) {
+    //     // if (isMouseWheelClicked) {
+    //     //     var deltaX = event.clientX - lastMousePosition.x;
+    //     //     var deltaY = event.clientY - lastMousePosition.y;
 
-        //     // 조절할 이동 거리 계수
-        //     var moveFactor = 1;
-        //     // 카메라 위치 조절
-        //     camera.target=null;
-        //     camera.position.x -= deltaX * moveFactor;
-        //     camera.position.y += deltaY * moveFactor;
-        //     camera.target.x -= deltaX * moveFactor;
-        //     camera.target.y += deltaY * moveFactor;
+    //     //     // 조절할 이동 거리 계수
+    //     //     var moveFactor = 1;
+    //     //     // 카메라 위치 조절
+    //     //     camera.target=null;
+    //     //     camera.position.x -= deltaX * moveFactor;
+    //     //     camera.position.y += deltaY * moveFactor;
+    //     //     camera.target.x -= deltaX * moveFactor;
+    //     //     camera.target.y += deltaY * moveFactor;
 
-        //     lastMousePosition = { x: event.clientX, y: event.clientY };
-        // }
-    });
+    //     //     lastMousePosition = { x: event.clientX, y: event.clientY };
+    //     // }
+    // });
 
-    canvas.addEventListener("mouseup", function (event) {
-        if (event.button === 1) {
-            isMouseWheelClicked = false;
-        }
-    });
+    // canvas.addEventListener("mouseup", function (event) {
+    //     if (event.button === 1) {
+    //         isMouseWheelClicked = false;
+    //     }
+    // });
 });
 
