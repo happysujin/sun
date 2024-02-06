@@ -3,6 +3,8 @@ var track_x =0, track_y=0, track_z=0;
 var anime = false;
 var planets = [];
 var wheel_alpha = 0, wheel_beta = 0, wheel_radius = 5;
+var fixed = false;
+var fix_radius = 10;
 
 var wheel_vector = new BABYLON.Vector3(0, 0, 0);
 class Planet {
@@ -125,7 +127,6 @@ window.addEventListener('DOMContentLoaded', function () {
         camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 20, BABYLON.Vector3(-50, 20, -50), scene);
         camera.attachControl(canvas, true);
         
-        
         var planetInfo = [
             { name: "Sun", diameter: 2, radius: 0, angle: 0, orbitalPeriod: 1, textureUrl: "https://raw.githubusercontent.com/happysujin/image-hosting/main/sun.jpg" },
             { name: "Mercury", diameter: 0.5, radius: 5, angle: 0, orbitalPeriod: 88, textureUrl: "https://raw.githubusercontent.com/happysujin/image-hosting/main/mercury.jpg" }, // 공전 주기는 일 단위로 지정
@@ -150,7 +151,6 @@ window.addEventListener('DOMContentLoaded', function () {
             // Rotate the planet around its own axis
             //Sun.rotation.y += 0.01;
             if(!anime){
-                
                 //else{
                     var newPosition = planets[track].moon.position.clone();
                     newPosition.x += track_x;
@@ -169,6 +169,11 @@ window.addEventListener('DOMContentLoaded', function () {
                     var cameraPosition = new BABYLON.Vector3(x, y, z);
                     //camera.position = cameraPosition;
                     camera.position = newPosition.add(wheel_vector);
+                }
+                else if(fixed){
+                    const distance = fix_radius - camera.radius;
+                    camera.radius += distance * 0.1;
+                    //camera.radius = fix_radius;
                 }
                 
             }
@@ -243,7 +248,7 @@ window.addEventListener('DOMContentLoaded', function () {
         event.preventDefault();
         
         if (isMouseWheelClicked) {
-            console.log('마우스 휠 버튼이 @@@@@@@@@@@');
+            //console.log('마우스 휠 버튼이 @@@@@@@@@@@');
             event.preventDefault();
             var deltaX = event.clientX - lastMousePosition.x;
             var deltaY = event.clientY - lastMousePosition.y;
@@ -270,13 +275,41 @@ window.addEventListener('DOMContentLoaded', function () {
         event.preventDefault();
         if (event.button === 1) {
             event.preventDefault();
-            console.log('마우스 휠 버튼이 데젹먼ㅇ마ㅣ엄ㄴ릭되었습니다.');
+            //console.log('마우스 휠 버튼이 데젹먼ㅇ마ㅣ엄ㄴ릭되었습니다.');
             isMouseWheelClicked = false;
             
-            console.log(wheel_alpha);
-            console.log(wheel_beta);
-            console.log(wheel_radius);
+            // console.log(wheel_alpha);
+            // console.log(wheel_beta);
+            // console.log(wheel_radius);
         }
     });
+
+
+    const animationSpeed = 0.02; // 애니메이션 속도
+    // 휠 이벤트 처리 함수 등록
+    scene.onPointerObservable.add((kbInfo) => {
+        if (kbInfo.type == 8) //scroll
+        {
+                // 휠의 방향에 따라 줌 값을 조정
+                var zoomSpeed = 0.1; // 조정할 줌 속도
+                fix_radius += kbInfo.event.deltaY * zoomSpeed;
+                // 카메라의 radius를 음수로 하면 카메라가 아래를 향합니다.
+                // 필요에 따라 조정하십시오.
+                //if (camera.radius < 0) {
+                //    camera.radius = 0;
+                //}
+        }
+    });
+
+
 });
+
+document.addEventListener('keydown', function(event) {
+    // Tab 키가 눌렸을 때
+    if (event.key === " ") {
+      // 원하는 함수 호출
+      fix_radius = camera.radius;
+      fixed = !fixed;
+    }
+  });
 

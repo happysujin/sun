@@ -163,6 +163,7 @@ async function smoothCameraTransition(camera, targetPosition, targetRadius, inde
     planetInfoRegister();
     //camera.setTarget(targetPosition);
     camera.radius=targetRadius;
+    fix_radius = targetRadius;
 }
 
 
