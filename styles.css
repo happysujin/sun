@@ -24,12 +24,16 @@ canvas {
     position: absolute; /* 절대 위치 설정 */
     top: 20px;
     right: 10px;
+    height: 30px;
+    width: 30px;
     /*transform: translateX(-50%); /* 가운데 정렬을 위한 위치 조정 */
     transform: translate(-50%, -50%);
     cursor: pointer;
     z-index: 10;
     color: white; /* 글자 색상을 흰색으로 설정 */
     font-size: 30px; /* 글자 크기 설정 */
+    text-align: center;
+    line-height: 30px;
 }
 
 #tooltip {

@@ -2,6 +2,9 @@ var track = 0;
 var track_x =0, track_y=0, track_z=0;
 var anime = false;
 var planets = [];
+var wheel_alpha = 0, wheel_beta = 0, wheel_radius = 5;
+
+var wheel_vector = new BABYLON.Vector3(0, 0, 0);
 class Planet {
     constructor(index, name = "Unknown", diameter = 0.5, radius = 5, angle = 0, orbitalPeriod = 365, textureUrl, scene, camera) {
         this.name = name;
@@ -147,15 +150,27 @@ window.addEventListener('DOMContentLoaded', function () {
             // Rotate the planet around its own axis
             //Sun.rotation.y += 0.01;
             if(!anime){
-                var newPosition = planets[track].moon.position.clone();
-                // newPosition.x = planets[track].moon.position.x + track_x;
-                // newPosition.y = planets[track].moon.position.y + track_y;
-                // newPosition.z = planets[track].moon.position.z + track_z;
-                //var newPosition = planets[track].moon.position;
-                newPosition.x += track_x;
-                newPosition.y += track_y;
-                newPosition.z += track_z;
-                camera.setTarget(newPosition);
+                
+                //else{
+                    var newPosition = planets[track].moon.position.clone();
+                    newPosition.x += track_x;
+                    newPosition.y += track_y;
+                    newPosition.z += track_z;
+                    camera.setTarget(newPosition);
+                //}
+                if(isMouseWheelClicked){
+                    console.log("in rendringa");
+                    // 카메라의 위치 계산
+                    var x =  (wheel_radius * Math.sin(wheel_alpha) * Math.cos(wheel_beta));
+                    var y =  ( wheel_radius * Math.sin(wheel_beta) * Math.sin(wheel_alpha));
+                    var z =  ( wheel_radius * Math.cos(wheel_beta) );
+
+                    // Vector3 객체 생성
+                    var cameraPosition = new BABYLON.Vector3(x, y, z);
+                    //camera.position = cameraPosition;
+                    camera.position = newPosition.add(wheel_vector);
+                }
+                
             }
             
             
@@ -200,39 +215,68 @@ window.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('resize', function () {
         engine.resize();
     });
+
+
     //moush wheel 
-    // var isMouseWheelClicked = false;
-    // var lastMousePosition = { x: 0, y: 0 };
+    var isMouseWheelClicked = false;
+    var lastMousePosition = { x: 0, y: 0 };
 
-    // canvas.addEventListener("mousedown", function (event) {
-    //     if (event.button === 1) {
-    //         isMouseWheelClicked = true;
-    //         lastMousePosition = { x: event.clientX, y: event.clientY };
-    //     }
-    // });
+    canvas.addEventListener("pointerdown", function (event) {
+        event.preventDefault();
+        if (event.button === 1) {
+            
+            console.log('마우스 휠 버튼이 클릭되었습니다.');
+            wheel_alpha = camera.alpha;
+            wheel_beta = camera.beta;
+            wheel_radius = camera.radius;
+            var temp = camera.position.clone();
+            var tempTarget = camera.target.clone();
+            wheel_vector.x = temp.x -tempTarget.x;
+            wheel_vector.y = temp.y -tempTarget.y;
+            wheel_vector.z = temp.z -tempTarget.z;
+            isMouseWheelClicked = true;
+            lastMousePosition = { x: event.clientX, y: event.clientY };
+        }
+    });
 
-    // canvas.addEventListener("mousemove", function (event) {
-    //     // if (isMouseWheelClicked) {
-    //     //     var deltaX = event.clientX - lastMousePosition.x;
-    //     //     var deltaY = event.clientY - lastMousePosition.y;
+    canvas.addEventListener("pointermove", function (event) {
+        event.preventDefault();
+        
+        if (isMouseWheelClicked) {
+            console.log('마우스 휠 버튼이 @@@@@@@@@@@');
+            event.preventDefault();
+            var deltaX = event.clientX - lastMousePosition.x;
+            var deltaY = event.clientY - lastMousePosition.y;
 
-    //     //     // 조절할 이동 거리 계수
-    //     //     var moveFactor = 1;
-    //     //     // 카메라 위치 조절
-    //     //     camera.target=null;
-    //     //     camera.position.x -= deltaX * moveFactor;
-    //     //     camera.position.y += deltaY * moveFactor;
-    //     //     camera.target.x -= deltaX * moveFactor;
-    //     //     camera.target.y += deltaY * moveFactor;
+            // 조절할 이동 거리 계수
+            var moveFactor = 0.05;
+            
+            var cameraDirection = camera.getDirection(new BABYLON.Vector3(0, 0, 1));
 
-    //     //     lastMousePosition = { x: event.clientX, y: event.clientY };
-    //     // }
-    // });
+            // 현재 카메라의 수직 방향 벡터를 계산
+            var cameraUpVector = camera.upVector;
+            var cameraRightVector = BABYLON.Vector3.Cross(cameraDirection, cameraUpVector);
 
-    // canvas.addEventListener("mouseup", function (event) {
-    //     if (event.button === 1) {
-    //         isMouseWheelClicked = false;
-    //     }
-    // });
+            //위치 이동량 계산
+            track_x += (deltaX * cameraRightVector.x + deltaY * cameraUpVector.x) * moveFactor;
+            track_y += (deltaX * cameraRightVector.y + deltaY * cameraUpVector.y) * moveFactor;
+            track_z += (deltaX * cameraRightVector.z + deltaY * cameraUpVector.z) * moveFactor;
+
+            lastMousePosition = { x: event.clientX, y: event.clientY };
+        }
+    });
+
+    canvas.addEventListener("pointerup", function (event) {
+        event.preventDefault();
+        if (event.button === 1) {
+            event.preventDefault();
+            console.log('마우스 휠 버튼이 데젹먼ㅇ마ㅣ엄ㄴ릭되었습니다.');
+            isMouseWheelClicked = false;
+            
+            console.log(wheel_alpha);
+            console.log(wheel_beta);
+            console.log(wheel_radius);
+        }
+    });
 });
 

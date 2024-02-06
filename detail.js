@@ -155,6 +155,10 @@ async function smoothCameraTransition(camera, targetPosition, targetRadius, inde
     const anim = scene.beginAnimation(camera, 0, 100, false, 1);
     await anim.waitAsync();
     track = index;
+    //target transform exit
+    track_x = 0;
+    track_y = 0;
+    track_z = 0;
     anime = false;
     planetInfoRegister();
     //camera.setTarget(targetPosition);
