@@ -33,7 +33,7 @@ canvas {
     color: white; /* 글자 색상을 흰색으로 설정 */
     font-size: 30px; /* 글자 크기 설정 */
     text-align: center;
-    line-height: 30px;
+    line-height: 25px;
 }
 
 #tooltip {
