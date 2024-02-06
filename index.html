@@ -5,10 +5,17 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div id="tooltip"></div>
     <canvas id="renderCanvas"></canvas>
-    <div class="pause-icon">❚❚</div>
+    <img id="infoIcon" src="https://raw.githubusercontent.com/happysujin/image-hosting/main/info.png" class="info-icon" alt="information">
+    <div id="playPauseIcon" class="pause-icon">❚❚</div>
+    <div id="description" class="description">
+        <h2>Information</h2>
+        <p>This is the description for the information icon. You can provide more details here.</p>
+    </div>
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="detail.js"></script>
     <script src="script.js"></script>
+    <script src="information.js"></script>
 </body>
 </html>
