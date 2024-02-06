@@ -102,9 +102,6 @@ window.addEventListener('DOMContentLoaded', function () {
         camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 20, BABYLON.Vector3(-50, 20, -50), scene);
         camera.attachControl(canvas, true);
         
-        camera.beta = 0;//Math.PI / 2; // 90 degrees
-        camera.setPosition(new BABYLON.Vector3(-50, 20, -50));
-        camera.setTarget(BABYLON.Vector3.Zero());
         // // Create a sphere to represent the planet
         // var Sun = BABYLON.MeshBuilder.CreateSphere("Sun", { diameter: 2 }, scene);
         // Sun.position = new BABYLON.Vector3(0, 0, 0);  // Set the position to the left-bottom corner
@@ -200,9 +197,9 @@ window.addEventListener('DOMContentLoaded', function () {
         scene.render();
     });
 
-    // window.addEventListener('resize', function () {
-    //     engine.resize();
-    // });
+    window.addEventListener('resize', function () {
+        engine.resize();
+    });
     //moush wheel 
     // var isMouseWheelClicked = false;
     // var lastMousePosition = { x: 0, y: 0 };
