@@ -122,7 +122,7 @@ window.addEventListener('DOMContentLoaded', function () {
         // Create a camera
         camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 20, BABYLON.Vector3(-50, 20, -50), scene);
         camera.attachControl(canvas, true);
-        //camera.inputs.removeByType('ArcRotateCameraPointersInput');
+        camera.inputs.removeByType('ArcRotateCameraPointersInput');
         
         
         var planetInfo = [
@@ -148,8 +148,8 @@ window.addEventListener('DOMContentLoaded', function () {
         scene.registerBeforeRender(function () {
             // Rotate the planet around its own axis
             //Sun.rotation.y += 0.01;
-            if(!anime ){
-                //console.log(camera.target);
+            if(!anime && !isDragging){
+                //console.log(camera.alpha);
                 //else{
                     var newPosition = planets[track].moon.position.clone();
                     newPosition.x += track_x;
@@ -171,6 +171,8 @@ window.addEventListener('DOMContentLoaded', function () {
                 }
                 
             }
+            if(isDragging);
+                //console.log(camera.beta);
             
             
             if(!pause){
@@ -225,7 +227,8 @@ window.addEventListener('DOMContentLoaded', function () {
         event.preventDefault();
         if (event.button === 0) {
             isDragging = true;
-            click_radius = calculateDistance(camera.position.clone(), planets[track].moon.position);
+            click_radius = calculateDistance(camera.position.clone(), camera.target.clone());
+            lastMousePosition = { x: event.clientX, y: event.clientY };
         }
         if (event.button === 1) {
             
@@ -248,6 +251,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if (isDragging) {
             var deltaX = event.clientX - lastMousePosition.x;
             var deltaY = event.clientY - lastMousePosition.y;
+            //console.log(deltaX, deltaY, camera.beta);
             // var targetPosition = new BABYLON.Vector3(0,0,0);
             // var targetPosition = planets[track].moon.position;
             // // 마우스 이동에 따라 카메라의 위치 및 방향 업데이트
@@ -260,8 +264,9 @@ window.addEventListener('DOMContentLoaded', function () {
             //     x: event.clientX,
             //     y: event.clientY
             // };
-            var dragVector = new BABYLON.Vector3(-deltaX,-deltaY,0);
+            const dragVector = new BABYLON.Vector3(deltaX,deltaY,0);
             fixPointRotation(dragVector);
+            lastMousePosition = { x: event.clientX, y: event.clientY };
         }
         if (isMouseWheelClicked) {
             console.log('마우스 휠 버튼이 @@@@@@@@@@@');

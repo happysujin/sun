@@ -223,15 +223,47 @@ async function waitForValueOne(value) {
 // 함수 호출
 
 function fixPointRotation(dragVector){
-    const moon = planets[track].moon.position.clone();
+    const moon = planets[track].moon.position;
     var sphericalCoordinates = cartesianToSpherical(moon, camera.position);
     var sphericalCoordinatesTarget = cartesianToSpherical(moon, camera.target);
-    var sensitivity = 0.00001;
+    var sensitivity = 0.01;
     const alpha = dragVector.x * sensitivity + sphericalCoordinates.alpha;
     const beta = dragVector.y * sensitivity + sphericalCoordinates.beta;
     const alphaT = dragVector.x * sensitivity + sphericalCoordinatesTarget.alpha;
     const betaT = dragVector.y * sensitivity + sphericalCoordinatesTarget.beta;
-    
+
+    //target
+    var radiusT = sphericalCoordinatesTarget.radius;
+    var xT =  radiusT * Math.sin(betaT) * Math.cos(alphaT);
+    var yT =  radiusT * Math.sin(betaT) * Math.sin(alphaT);
+    var zT =  radiusT * Math.cos(betaT);
+    //track_x += moon.x + xT - camera.target.x;
+    //track_y += moon.y + yT - camera.target.y;
+    //track_z += moon.z + zT - camera.target.z;
+    var targetPosition = new BABYLON.Vector3(xT,yT,zT);
+    //camera.setTarget(moon.add(targetPosition));
+
+    const currentRadius = camera.radius;
+    const currentAlpha = camera.alpha;
+    const currentBeta = camera.beta;
+    const currentPosition = camera.position.clone();
+
+    // 잠시 planet으로 이동
+    camera.setTarget(moon);
+    //회전
+    camera.position = currentPosition;
+    camera.beta -= dragVector.y * sensitivity;
+    camera.alpha -= dragVector.x * sensitivity;
+
+    const afterPosition = camera.position.clone();
+    // 다시 원위치
+    var targetOrigin = new BABYLON.Vector3(track_x,track_y,track_z);
+    camera.setTarget(moon.add(targetOrigin));
+    //camera.position = afterPosition;
+
+
+
+    /*
     var radius = sphericalCoordinates.radius;
     var radiusT = sphericalCoordinatesTarget.radius;
 
@@ -243,18 +275,19 @@ function fixPointRotation(dragVector){
     var yT =  radiusT * Math.sin(betaT) * Math.sin(alphaT);
     var zT =  radiusT * Math.cos(betaT);
 
-    track_x += moon.x + xT - camera.target.x;
-    track_y += moon.y + yT - camera.target.y;
-    track_z += moon.z + zT - camera.target.z;
+    ///track_x += moon.x + xT - camera.target.x;
+    //track_y += moon.y + yT - camera.target.y;
+    //track_z += moon.z + zT - camera.target.z;
 
 
     // Vector3 객체 생성
     var cameraPosition = new BABYLON.Vector3(x, y, z);
     var tempPosition = moon;
 
-    //camera.position = tempPosition.add(cameraPosition);
+    camera.position = tempPosition.add(cameraPosition);
 
     var targetPosition = new BABYLON.Vector3(xT,yT,zT);
     //camera.setTarget(tempPosition.add(targetPosition));
+    */
 }
 

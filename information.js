@@ -43,12 +43,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function planetInfoRegister() {
     // h2 요소 내용 변경
-    var one = planets[track];
+    var one = planetInfoDescription[track];
     var h2Element = document.querySelector('#description h2');
     h2Element.textContent = one.name;
 
     // p 요소 내용 변경
     var pElement = document.querySelector('#description p');
-    pElement.textContent = 'Diameter: ' + one.diameter + '\n';
+    pElement.textContent = 'Diameter: ' + one.diameter + " (km)\n"
+    + "Radius: " + one.radius + " (AU)\n";
 }
 
