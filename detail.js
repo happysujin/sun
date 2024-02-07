@@ -221,3 +221,40 @@ async function waitForValueOne(value) {
 }
 
 // 함수 호출
+
+function fixPointRotation(dragVector){
+    const moon = planets[track].moon.position.clone();
+    var sphericalCoordinates = cartesianToSpherical(moon, camera.position);
+    var sphericalCoordinatesTarget = cartesianToSpherical(moon, camera.target);
+    var sensitivity = 0.00001;
+    const alpha = dragVector.x * sensitivity + sphericalCoordinates.alpha;
+    const beta = dragVector.y * sensitivity + sphericalCoordinates.beta;
+    const alphaT = dragVector.x * sensitivity + sphericalCoordinatesTarget.alpha;
+    const betaT = dragVector.y * sensitivity + sphericalCoordinatesTarget.beta;
+    
+    var radius = sphericalCoordinates.radius;
+    var radiusT = sphericalCoordinatesTarget.radius;
+
+    var x =  radius * Math.sin(beta) * Math.cos(alpha);
+    var y =  radius * Math.sin(beta) * Math.sin(alpha);
+    var z =  radius * Math.cos(beta);
+
+    var xT =  radiusT * Math.sin(betaT) * Math.cos(alphaT);
+    var yT =  radiusT * Math.sin(betaT) * Math.sin(alphaT);
+    var zT =  radiusT * Math.cos(betaT);
+
+    track_x += moon.x + xT - camera.target.x;
+    track_y += moon.y + yT - camera.target.y;
+    track_z += moon.z + zT - camera.target.z;
+
+
+    // Vector3 객체 생성
+    var cameraPosition = new BABYLON.Vector3(x, y, z);
+    var tempPosition = moon;
+
+    //camera.position = tempPosition.add(cameraPosition);
+
+    var targetPosition = new BABYLON.Vector3(xT,yT,zT);
+    //camera.setTarget(tempPosition.add(targetPosition));
+}
+

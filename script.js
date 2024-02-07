@@ -3,6 +3,7 @@ var track_x =0, track_y=0, track_z=0;
 var anime = false;
 var planets = [];
 var wheel_alpha = 0, wheel_beta = 0, wheel_radius = 5;
+var click_radius = 5;
 
 var wheel_vector = new BABYLON.Vector3(0, 0, 0);
 class Planet {
@@ -115,15 +116,13 @@ window.addEventListener('DOMContentLoaded', function () {
     var createScene = function () {
         var scene = new BABYLON.Scene(engine);
 
-    
-        
-
         // Create a light
         var light = new BABYLON.PointLight("light", new BABYLON.Vector3(0, 0, 0), scene);
 
         // Create a camera
         camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 20, BABYLON.Vector3(-50, 20, -50), scene);
         camera.attachControl(canvas, true);
+        //camera.inputs.removeByType('ArcRotateCameraPointersInput');
         
         
         var planetInfo = [
@@ -149,8 +148,8 @@ window.addEventListener('DOMContentLoaded', function () {
         scene.registerBeforeRender(function () {
             // Rotate the planet around its own axis
             //Sun.rotation.y += 0.01;
-            if(!anime){
-                
+            if(!anime ){
+                //console.log(camera.target);
                 //else{
                     var newPosition = planets[track].moon.position.clone();
                     newPosition.x += track_x;
@@ -226,6 +225,7 @@ window.addEventListener('DOMContentLoaded', function () {
         event.preventDefault();
         if (event.button === 0) {
             isDragging = true;
+            click_radius = calculateDistance(camera.position.clone(), planets[track].moon.position);
         }
         if (event.button === 1) {
             
@@ -248,18 +248,20 @@ window.addEventListener('DOMContentLoaded', function () {
         if (isDragging) {
             var deltaX = event.clientX - lastMousePosition.x;
             var deltaY = event.clientY - lastMousePosition.y;
-            var targetPosition = new BABYLON.Vector3(0,0,0);
-            var targetPosition = planets[track].moon.position;
-            // 마우스 이동에 따라 카메라의 위치 및 방향 업데이트
-            var rotationQuaternion = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, deltaX / 500);
-            camera.position = BABYLON.Vector3.TransformCoordinates(camera.position.subtract(targetPosition), rotationQuaternion).add(targetPosition);
+            // var targetPosition = new BABYLON.Vector3(0,0,0);
+            // var targetPosition = planets[track].moon.position;
+            // // 마우스 이동에 따라 카메라의 위치 및 방향 업데이트
+            // var rotationQuaternion = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, deltaX / 500);
+            // camera.position = BABYLON.Vector3.TransformCoordinates(camera.position.subtract(targetPosition), rotationQuaternion).add(targetPosition);
     
-            camera.beta += deltaY / 100;
+            // camera.beta += deltaY / 100;
     
-            lastMousePosition = {
-                x: event.clientX,
-                y: event.clientY
-            };
+            // lastMousePosition = {
+            //     x: event.clientX,
+            //     y: event.clientY
+            // };
+            var dragVector = new BABYLON.Vector3(-deltaX,-deltaY,0);
+            fixPointRotation(dragVector);
         }
         if (isMouseWheelClicked) {
             console.log('마우스 휠 버튼이 @@@@@@@@@@@');
@@ -268,7 +270,7 @@ window.addEventListener('DOMContentLoaded', function () {
             var deltaY = event.clientY - lastMousePosition.y;
 
             // 조절할 이동 거리 계수
-            var moveFactor = 0.05;
+            var moveFactor = 0.1;
             
             var cameraDirection = camera.getDirection(new BABYLON.Vector3(0, 0, 1));
 
